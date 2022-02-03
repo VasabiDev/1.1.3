@@ -8,17 +8,21 @@ public class Main {
 
 
     public static void main(String[] args) {
+
         // создаем юзерсервис
         UserServiceImpl userService = new UserServiceImpl();
-        // добавляем пользователей в таблицу
+       userService.createUsersTable();
+    // добавляем пользователей в таблицу
         userService.saveUser("Joseph", "Joestar", (byte) 24);
         userService.saveUser("Jotaro", "Kujo", (byte) 18);
         userService.saveUser("Josuke", "Higashikata", (byte) 18);
         userService.saveUser("Jolyne", "Cujoh", (byte) 20);
+
+      userService.getAllUsers();
         // очистка таблицы
-        userService.cleanUsersTable();
+       userService.cleanUsersTable();
         // удаление таблицы
-        userService.dropTable();
+       userService.dropTable();
 
         // отака фигня пацаны :o
     }
