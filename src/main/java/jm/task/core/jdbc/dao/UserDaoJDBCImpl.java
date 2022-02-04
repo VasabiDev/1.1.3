@@ -17,17 +17,7 @@ public class UserDaoJDBCImpl implements UserDao {
     private static final String userName = "root";
     private static final String pass = "SQLserverPass";
     private static final String url = "jdbc:mysql://localhost:3306/test?serverTimezone=UTC";
-    static Connection connection = null;
-
-    {
-        try {
-            connection = DriverManager.getConnection(url, userName, pass);
-            System.out.println("Подключение к базе прошло успешно");
-        } catch (SQLException e) {
-            System.out.println("Неудачное подключение к базе");
-            e.printStackTrace();
-        }
-    }
+    private final Connection connection = Util.connection();
 
     public void createUsersTable() {
 
@@ -38,18 +28,25 @@ public class UserDaoJDBCImpl implements UserDao {
                 + "lastName VARCHAR(64),"
                 + "age TINYINT(4), "
                 + "PRIMARY KEY(id))";
-        try (Statement statement = Util.connection().createStatement()) {
-            DatabaseMetaData md1 = Util.connection().getMetaData();
+        try (Statement statement = connection.createStatement()) {
+            DatabaseMetaData md1 = connection.getMetaData();
             ResultSet rs1 = md1.getTables(null, null, tableName, null);
             if (!rs1.next()) {
-                statement.executeUpdate("START TRANSACTION");
+                connection.setAutoCommit(false);
+
                 statement.executeUpdate(usersTable);
                 System.out.println("Таблица была успешно создана");
-                statement.executeUpdate("ROLLBACK");
+                connection.commit();
             } else {
                 System.out.println("Такая таблица уже существует");
             }
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                System.out.println("во время отката произошло исключение");
+                ex.printStackTrace();
+            }
             System.out.println("Неудачное подключение к базе");
             e.printStackTrace();
         }
@@ -57,18 +54,24 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void dropUsersTable() {
         // удаление таблицы
-        try (Statement statement = Util.connection().createStatement()) {
-            DatabaseMetaData md1 = Util.connection().getMetaData();
+        try (Statement statement = connection.createStatement()) {
+            DatabaseMetaData md1 = connection.getMetaData();
             ResultSet rs1 = md1.getTables(null, null, tableName, null);
             if (rs1.next()) {
-                statement.executeUpdate("START TRANSACTION");
+                connection.setAutoCommit(false);
+
                 statement.executeUpdate("DROP TABLE " + tableName);
                 System.out.println("Таблица была успешно удалена");
-                statement.executeUpdate("ROLLBACK");
+                connection.commit();
             } else {
                 System.out.println("Такой таблицы не существует");
             }
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             System.out.println("Неудачное подключение к базе");
             e.printStackTrace();
         }
@@ -80,25 +83,35 @@ public class UserDaoJDBCImpl implements UserDao {
                 ", lastName = " + "'" + lastName + "'" + ", age = " + "'" + age + "'";
 
         // делаем запрос к базе
-        try (Statement statement1 = Util.connection().createStatement()) {
-            //   statement.executeUpdate("START TRANSACTION");
+        try (Statement statement1 = connection.createStatement()) {
+            connection.setAutoCommit(false);
             statement1.executeUpdate(sqlInsert);
             System.out.println("User с именем – " + name + " добавлен в базу данных");
-        //    statement.executeUpdate("ROLLBACK");
+            connection.commit();
 
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             System.out.println("Неудачное подключение к базе");
             e.printStackTrace();
         }
     }
 
     public void removeUserById(long id) {
-        try (Statement statement = Util.connection().createStatement()) {
-            statement.executeUpdate("START TRANSACTION");
+        try (Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
             statement.executeUpdate("DELETE FROM " + tableName + " WHERE id=" + id);
             System.out.println("удален пользователь с id " + id);
-            statement.executeUpdate("ROLLBACK");
+            connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             System.out.println("Неудачное подключение к базе");
             e.printStackTrace();
         }
@@ -106,26 +119,29 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> resultList = new ArrayList<>();
-        try (Statement statement = Util.connection().createStatement()) {
-            statement.executeUpdate("START TRANSACTION");
+        try (Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
             ResultSet result = statement.executeQuery("SELECT * FROM " + tableName);
-
+            connection.commit();
             while (result.next()) {
-                User templUser = new User();
-                templUser.setId(result.getLong("id"));
-                templUser.setName(result.getString("name"));
-                templUser.setLastName(result.getString("lastName"));
-                templUser.setAge(result.getByte("age"));
-                resultList.add(templUser);
+                User tempUser = new User();
+                tempUser.setId(result.getLong("id"));
+                tempUser.setName(result.getString("name"));
+                tempUser.setLastName(result.getString("lastName"));
+                tempUser.setAge(result.getByte("age"));
+                resultList.add(tempUser);
 
-                for (User u : resultList){
-                    System.out.println(u.toString());
-                }
 
             }
-
-            statement.executeUpdate("ROLLBACK");
+            for (User u : resultList) {
+                System.out.println(u.toString());
+            }
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             System.out.println("Неудачное подключение к базе");
             e.printStackTrace();
         }
@@ -134,33 +150,21 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        try (Statement statement = Util.connection().createStatement()) {
-            statement.executeUpdate("START TRANSACTION");
+        try (Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
             statement.executeUpdate("TRUNCATE TABLE " + tableName);
             System.out.println("Таблица была успешно очищена");
-            statement.executeUpdate("ROLLBACK");
+            connection.commit();
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             System.out.println("Неудачное подключение к базе");
             e.printStackTrace();
         }
     }
 
-    public void dropTable() {
-        DatabaseMetaData md = null;
-        try (Statement statement = Util.connection().createStatement()) {
-            md = Util.connection().getMetaData();
-            ResultSet rs1 = md.getTables(null, null, tableName, null);
-            if (rs1.next()) {
-                statement.executeUpdate("START TRANSACTION");
-                statement.executeUpdate("DROP TABLE " + tableName);
-                System.out.println("Таблица была успешно удалена");
-                statement.executeUpdate("ROLLBACK");
-            } else if (!rs1.next()) {
-                System.out.println("Таблицы не существует");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
 }
