@@ -1,6 +1,7 @@
 package jm.task.core.jdbc.model;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
@@ -8,7 +9,7 @@ import java.util.Objects;
 import static java.util.Objects.hash;
 
 
-
+@Entity
 @Table(name = "USERDB")
 public class User {
 

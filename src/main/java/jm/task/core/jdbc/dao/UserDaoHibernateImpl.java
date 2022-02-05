@@ -4,7 +4,7 @@ import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
@@ -12,52 +12,100 @@ public class UserDaoHibernateImpl implements UserDao {
     public UserDaoHibernateImpl() {
 
     }
-private final SessionFactory sessionFactory = (SessionFactory) Util.connection();
+
+    private final SessionFactory sessionFactory = Util.getSessionFactory();
 
 
     @Override
     public void createUsersTable() {
-        Session session = this.sessionFactory.getCurrentSession();
+        String usersTable = "CREATE TABLE " + tableName + " ("
+                + "id BIGINT(64) NOT NULL AUTO_INCREMENT,"
+                + "name VARCHAR(64),"
+                + "lastName VARCHAR(64),"
+                + "age TINYINT(4), "
+                + "PRIMARY KEY(id))";
+        try( Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.createSQLQuery(usersTable).executeUpdate();
+            System.out.println("Таблица была успешно создана");
+            session.getTransaction().commit();
+        }catch (Exception e){
+
+        }
+
+
+
+
 
     }
 
     @Override
     public void dropUsersTable() {
-        Session session = this.sessionFactory.getCurrentSession();
+        try( Session session = sessionFactory.openSession()) {
+
+        }catch (Exception e){
+
+        }
+
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        Session session = this.sessionFactory.getCurrentSession();
-        session.persist(name);
-        session.persist(lastName);
-        session.persist(age);
-        System.out.println("User с именем – " + name + " добавлен в базу данных");
+        String sqlInsert = "INSERT INTO " + tableName + " SET" + " name = " + "'" + name + "'" +
+                ", lastName = " + "'" + lastName + "'" + ", age = " + "'" + age + "'";
+
+        try( Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.createSQLQuery(sqlInsert).executeUpdate();
+            System.out.println("User с именем – " + name + " добавлен в базу данных");
+            session.getTransaction().commit();
+        }catch (Exception e){
+
+        }
+
+
     }
 
     @Override
     public void removeUserById(long id) {
-        Session session = this.sessionFactory.getCurrentSession();
-        User tempUser = (User) session.load(User.class, id);
-        if(tempUser!=null){
-            session.delete(tempUser);
+        try( Session session = sessionFactory.openSession()) {
+            User tempUser = (User) session.load(User.class, id);
+            if(tempUser!=null){
+                session.delete(tempUser);
+            }
+            System.out.println("удален пользователь с id " + id);
+        }catch (Exception e){
+
         }
-        System.out.println("удален пользователь с id " + id);
 
     }
 
     @Override
     public List<User> getAllUsers() {
-        Session session = this.sessionFactory.getCurrentSession();
-        List<User> resultList = session.createSQLQuery(tableName).list();
-        for (User u : resultList) {
-            System.out.println(u.toString());
+
+        List<User> resultList = new ArrayList<>();
+        try(Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            String queryStr = "SELECT USER FROM "+tableName+" USER";
+            resultList = session.createQuery(queryStr).list();
+
+            session.getTransaction().commit();
+
+            for (User u : resultList) {
+                System.out.println(u.toString());
+            }
+        }catch (Exception e){
         }
         return resultList;
     }
 
     @Override
     public void cleanUsersTable() {
+        try( Session session = sessionFactory.openSession()) {
+
+        }catch (Exception e){
+
+        }
 
     }
 }
