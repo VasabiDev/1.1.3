@@ -7,7 +7,9 @@ import java.util.Objects;
 
 import static java.util.Objects.hash;
 
-@Table
+
+
+@Table(name = "USERDB")
 public class User {
 
 
@@ -101,4 +103,6 @@ public class User {
                 ", age=" + age +
                 '}';
     }
+
+    private static final String tableName = "USERSDB";
 }
