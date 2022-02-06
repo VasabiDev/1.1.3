@@ -3,6 +3,7 @@ package jm.task.core.jdbc;
 import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
 
+
 import java.lang.*;
 
 public class Main {
@@ -22,8 +23,9 @@ public class Main {
         userService.getAllUsers();
         // очистка таблицы
         userService.cleanUsersTable();
+        userService.getAllUsers();
         // удаление таблицы
-        userService.dropUsersTable();
+          userService.dropUsersTable();
 
         // отака фигня пацаны :o
     }

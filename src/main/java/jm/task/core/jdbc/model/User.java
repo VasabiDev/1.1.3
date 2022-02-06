@@ -10,7 +10,7 @@ import static java.util.Objects.hash;
 
 
 @Entity
-@Table(name = "USERDB")
+@Table(name = "USERSDB")
 public class User {
 
 
