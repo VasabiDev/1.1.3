@@ -7,7 +7,6 @@ import org.hibernate.SessionFactory;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +14,9 @@ public class UserDaoHibernateImpl implements UserDao {
     private static final String tableName = "USERSDB";
 
     public UserDaoHibernateImpl() {
-
     }
 
     private final SessionFactory sessionFactory = Util.getSessionFactory();
-
 
     @Override
     public void createUsersTable() {
@@ -40,8 +37,6 @@ public class UserDaoHibernateImpl implements UserDao {
             sessionFactory.getCurrentSession().getTransaction().rollback();
 
         }
-
-
     }
 
     @Override
@@ -54,7 +49,6 @@ public class UserDaoHibernateImpl implements UserDao {
         } catch (Exception e) {
             sessionFactory.getCurrentSession().getTransaction().rollback();
         }
-
     }
 
     @Override
@@ -70,8 +64,6 @@ public class UserDaoHibernateImpl implements UserDao {
         } catch (Exception e) {
             sessionFactory.getCurrentSession().getTransaction().rollback();
         }
-
-
     }
 
     @Override
@@ -87,7 +79,6 @@ public class UserDaoHibernateImpl implements UserDao {
         } catch (Exception e) {
             sessionFactory.getCurrentSession().getTransaction().rollback();
         }
-
     }
 
     @Override
@@ -108,21 +99,17 @@ public class UserDaoHibernateImpl implements UserDao {
             sessionFactory.getCurrentSession().getTransaction().rollback();
         }
         return resultList;
-
     }
 
     @Override
     public void cleanUsersTable() {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-       //     sessionFactory.getCurrentSession().createQuery("DELETE FROM " + tableName).executeUpdate();
-       //     sessionFactory.getCurrentSession().delete("TRUNCATE TABLE " + tableName);
-           session.createSQLQuery("TRUNCATE TABLE "+ tableName).executeUpdate();
+            session.createSQLQuery("TRUNCATE TABLE " + tableName).executeUpdate();
             System.out.println("Таблица была успешно очищена");
             session.getTransaction().commit();
         } catch (Exception e) {
             sessionFactory.getCurrentSession().getTransaction().rollback();
         }
-
     }
 }

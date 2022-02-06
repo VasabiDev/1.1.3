@@ -91,10 +91,11 @@ public class User {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = (int) (prime * result + (hash(name)+hash(lastName)));
+        result = (int) (prime * result + (hash(name) + hash(lastName)));
         result = prime * result + ((lastName == null) ? 0 : (lastName.hashCode() >>> 31));
         return result;
     }
+
     @Override
     public String toString() {
         return "User{" +
