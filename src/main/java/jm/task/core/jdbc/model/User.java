@@ -1,13 +1,16 @@
 package jm.task.core.jdbc.model;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
 
 import static java.util.Objects.hash;
 
-@Table
+
+@Entity
+@Table(name = "USERSDB")
 public class User {
 
 
@@ -88,10 +91,11 @@ public class User {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = (int) (prime * result + (hash(name)+hash(lastName)));
+        result = (int) (prime * result + (hash(name) + hash(lastName)));
         result = prime * result + ((lastName == null) ? 0 : (lastName.hashCode() >>> 31));
         return result;
     }
+
     @Override
     public String toString() {
         return "User{" +
@@ -101,4 +105,6 @@ public class User {
                 ", age=" + age +
                 '}';
     }
+
+    private static final String tableName = "USERSDB";
 }
