@@ -23,7 +23,6 @@ public class Util {
             prop.setProperty("dialect", "org.hibernate.dialect.MySQLDialect");
 
             sessionFactory = new Configuration()
-                    .addPackage("com.concreteness.persistence")
                     .addProperties(prop)
                     .addAnnotatedClass(User.class)
                     .buildSessionFactory();

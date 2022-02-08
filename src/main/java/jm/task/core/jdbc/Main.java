@@ -13,6 +13,7 @@ public class Main {
 
         // создаем юзерсервис
         UserService userService = new UserServiceImpl();
+
         userService.createUsersTable();
         // добавляем пользователей в таблицу
         userService.saveUser("Joseph", "Joestar", (byte) 24);
